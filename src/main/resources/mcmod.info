@@ -1,0 +1,17 @@
+[
+{
+  "modid": "tconmodmod",
+  "name": "Tinkers' Modifier Modifier",
+  "description": "Allows sort-of-granular configuration of Tinkers' modifiers.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["phantamanta44"],
+  "logoFile": "",
+  "screenshots": [],
+  "useDependencyInformation": true,
+  "dependencies": ["tconstruct"],
+  "requiredMods": ["tconstruct"]
+}
+]
