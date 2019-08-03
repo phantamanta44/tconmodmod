@@ -2,21 +2,25 @@
 
 Allows modpack creators to modify properties of Tinkers' Construct tool modifiers.
 
-## How the heck do I use this thing?
+## Configuring Mutations
 
-In your `.minecraft/config` folder, create a JSON document called `tconmodmod.json`. The document root should be a `ModifierEntry[]`. The specifications are as follows:
+In your `.minecraft/config` folder, create a JSON document called `tconmodmod.json`. The document root should be a `ModifierEntry[]`, the specification for which is as follows:
 
 ```
 // Represents a single modifier to be mutated
 object ModifierEntry {
-    String modifier           // Identifier of the modifier to mutate
+    String? modifier          // Identifier of the modifier to mutate
+    String[]? modifiers       // Alternatively, a list of identifiers to mutate
     MutationEntry[] mutations // Set of mutations to apply to the modifier
 }
+```
 
+The `MutationEntry` objects are specified as follows:
+
+```
 // Represents a single mutation to be applied to a modifier
 object MutationEntry {
     String type  // An identifier for the mutation type
-    Object value // The parameters to the mutation
 }
 
 // Mutates the in-game colour for the modifier
@@ -37,6 +41,15 @@ object MaterialMutationEntry : MutationEntry {
     Ingredient[] value // The set of possible ingredients that can apply the modifier
 }
 
+// Mutates an embossment such that it ignores the embossment limit
+object UnlimitedEmbossMutationEntry : MutationEntry {
+    String type = "unlimited_emboss"
+}
+```
+
+Some mutations (e.g. `material`) require item stack matchers for matching ingredients. Those are specified as follows:
+
+```
 // Represents an item stack matcher used for matching recipe ingredients
 object Ingredient {
     String type     // An identifier for the ingredient type
@@ -58,9 +71,16 @@ object ItemIngredient : Ingredient {
 }
 ```
 
-## Example configuration
+In addition to the mutation configuration as specified above, the main `tconmodmod.cfg` configuration file contains some useful options. It is recommended that modpack authors take a look at it before writing a mutation configuration.
 
-This configuration causes the "Haste" modifier to become cyan, require 128 units of material per level, and require one gold ingot or equivalent for one unit of material.
+## Example Configuration
+
+This configuration does the following:
+* The haste modifier becomes cyan in colour.
+* The haste modifier requires 128 units of material per level.
+* The haste modifier uses one gold ingot or equivalent for a unit of material.
+* The paper and cactus embossments can be applied on top of other embossments.
+    * Note that order matters! Applying paper first means that other embossments (aside from cactus) can no longer be applied!
 
 ```json
 [
@@ -91,6 +111,19 @@ This configuration causes the "Haste" modifier to become cyan, require 128 units
             "type": "ore",
             "ore": "nuggetGold",
             "amount": 9
+          }
+        ]
+      },
+      {
+        "modifiers": [
+          "extratraitpaperwritable1",
+          "extratraitpaperwritable1writable2",
+          "extratraitpaperwritable2",
+          "extratraitcactusprickly"
+        ],
+        "mutations": [
+          {
+            "type": "unlimited_emboss"
           }
         ]
       }
