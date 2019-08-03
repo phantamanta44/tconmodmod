@@ -6,6 +6,7 @@ import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierAspect;
 import slimeknights.tconstruct.library.modifiers.ModifierTrait;
 import slimeknights.tconstruct.library.traits.AbstractTrait;
+import slimeknights.tconstruct.tools.modifiers.ModExtraTrait;
 import slimeknights.tconstruct.tools.modifiers.ToolModifier;
 
 import java.lang.reflect.Field;
@@ -31,6 +32,8 @@ public class TconReflect {
 
     private static final Field fLevelAspect_maxLevel;
     private static final Field fModifierTrait_maxLevel;
+
+    private static final Class cModExtraTrait_ExtraTraitAspect;
 
     static {
         try {
@@ -65,6 +68,8 @@ public class TconReflect {
             fModifierTrait_maxLevel = ModifierTrait.class.getDeclaredField("maxLevel");
             unfinal(fModifierTrait_maxLevel);
             fModifierTrait_maxLevel.setAccessible(true);
+
+            cModExtraTrait_ExtraTraitAspect = Class.forName(ModExtraTrait.class.getCanonicalName() + "$ExtraTraitAspect");
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize tcon reflection!", e);
         }
@@ -156,6 +161,10 @@ public class TconReflect {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to write ModifierTrait.maxLevel!", e);
         }
+    }
+
+    public static boolean instanceOfExtraTraitAspect(Object o) {
+        return cModExtraTrait_ExtraTraitAspect.isInstance(o);
     }
 
 }

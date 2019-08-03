@@ -7,15 +7,20 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.modifiers.IModifier;
+import slimeknights.tconstruct.tools.modifiers.ModExtraTrait;
 import xyz.phanta.tconmodmod.model.ModifierEntry;
 import xyz.phanta.tconmodmod.model.MutationEntry;
 import xyz.phanta.tconmodmod.mutator.ModifierMutator;
+import xyz.phanta.tconmodmod.util.TconReflect;
 
 import javax.annotation.Nullable;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommonProxy {
 
@@ -47,18 +52,46 @@ public class CommonProxy {
     }
 
     public void onPostInit(FMLPostInitializationEvent event) {
+        if (TMMConfig.logModifiers) {
+            TconModMod.LOGGER.info("Modifier logging was requested. This can be disabled in the config!");
+            TinkerRegistry.getAllModifiers().stream()
+                    .sorted(Comparator.comparing(IModifier::getIdentifier))
+                    .distinct()
+                    .forEach(m -> TconModMod.LOGGER.info("- {} = {} ({})",
+                            m.getIdentifier(), m.getLocalizedName(), m.getClass().getCanonicalName()));
+        }
         if (config != null) {
             TconModMod.LOGGER.info("Applying modifications...");
+            Map<String, ModifierMutator<?>> targetCache = new HashMap<>();
             for (ModifierEntry modEntry : config) {
-                IModifier mod = TinkerRegistry.getModifier(modEntry.getModifier());
-                if (mod != null) {
-                    TconModMod.LOGGER.info("Modifying: {}", mod.getIdentifier());
-                    ModifierMutator<?> mutator = new ModifierMutator<>(mod);
-                    for (MutationEntry mutEntry : modEntry.getMutations()) {
-                        mutator.tryMutate(mutEntry);
+                for (String target : modEntry.getTargets()) {
+                    ModifierMutator<?> mutator = targetCache.get(target);
+                    if (mutator == null) {
+                        IModifier mod = TinkerRegistry.getModifier(target);
+                        if (mod != null) {
+                            mutator = new ModifierMutator<>(mod);
+                            targetCache.put(target, mutator);
+                        } else {
+                            TconModMod.LOGGER.warn("Skipping unknown modifier: {}", target);
+                            continue;
+                        }
                     }
-                } else {
-                    TconModMod.LOGGER.warn("Skipping unknown modifier: {}", modEntry.getModifier());
+                    for (MutationEntry mutEntry : modEntry.getMutations()) {
+                        TconModMod.LOGGER.info("Applying mutation: {} -> {}", mutEntry.getType(), target);
+                        try {
+                            mutator.tryMutate(mutEntry);
+                        } catch (Exception e) {
+                            TconModMod.LOGGER.warn("Mutation failed! Moving on...", e);
+                        }
+                    }
+                }
+            }
+        }
+        if (TMMConfig.globalUnlimitedEmboss) {
+            TconModMod.LOGGER.info("Applying global unlimited emboss...");
+            for (IModifier mod : TinkerRegistry.getAllModifiers()) {
+                if (mod instanceof ModExtraTrait) {
+                    TconReflect.getAspects((ModExtraTrait)mod).removeIf(TconReflect::instanceOfExtraTraitAspect);
                 }
             }
         }
