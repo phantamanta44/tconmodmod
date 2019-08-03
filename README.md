@@ -71,7 +71,12 @@ object ItemIngredient : Ingredient {
 }
 ```
 
-In addition to the mutation configuration as specified above, the main `tconmodmod.cfg` configuration file contains some useful options. It is recommended that modpack authors take a look at it before writing a mutation configuration.
+In addition to the mutation configuration as specified above, the main `tconmodmod.cfg` configuration file contains some useful options:
+
+* Print all modifier IDs on game startup
+* Global unlimited embossments
+
+It is recommended that modpack authors take a look at it before writing a mutation configuration.
 
 ## Example Configuration
 
