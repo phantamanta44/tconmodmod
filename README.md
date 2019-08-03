@@ -79,6 +79,7 @@ This configuration does the following:
 * The haste modifier becomes cyan in colour.
 * The haste modifier requires 128 units of material per level.
 * The haste modifier uses one gold ingot or equivalent for a unit of material.
+* The haste modifier stacks up to 10 times
 * The paper and cactus embossments can be applied on top of other embossments.
     * Note that order matters! Applying paper first means that other embossments (aside from cactus) can no longer be applied!
 
@@ -115,17 +116,21 @@ This configuration does the following:
         ]
       },
       {
-        "modifiers": [
-          "extratraitpaperwritable1",
-          "extratraitpaperwritable1writable2",
-          "extratraitpaperwritable2",
-          "extratraitcactusprickly"
-        ],
-        "mutations": [
-          {
-            "type": "unlimited_emboss"
-          }
-        ]
+        "type": "max_level",
+        "value": 10
+      }
+    ]
+  },
+  {
+    "modifiers": [
+      "extratraitpaperwritable1",
+      "extratraitpaperwritable1writable2",
+      "extratraitpaperwritable2",
+      "extratraitcactusprickly"
+    ],
+    "mutations": [
+      {
+        "type": "unlimited_emboss"
       }
     ]
   }
