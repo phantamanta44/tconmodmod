@@ -41,6 +41,12 @@ object MaterialMutationEntry : MutationEntry {
     Ingredient[] value // The set of possible ingredients that can apply the modifier
 }
 
+// Mutates the maximum number of levels the modifier stacks to
+object MaxLevelMutationEntry : MutationEntry {
+    String type = "max_level"
+    Integer value // The new maximum level the modifier stacks to
+}
+
 // Mutates an embossment such that it ignores the embossment limit
 object UnlimitedEmbossMutationEntry : MutationEntry {
     String type = "unlimited_emboss"
