@@ -84,6 +84,10 @@ In addition to the mutation configuration as specified above, the main `tconmodm
 
 It is recommended that modpack authors take a look at it before writing a mutation configuration.
 
+## Notes
+
+* The reinforced modifier's chance per level is coded in a way such that it is very difficult to change. Regardless of what you mutate its max level to be, each level will always add a 20% chance.
+
 ## Example Configuration
 
 This configuration does the following:

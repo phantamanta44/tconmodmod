@@ -7,8 +7,6 @@ import slimeknights.tconstruct.library.modifiers.ModifierTrait;
 import xyz.phanta.tconmodmod.mutator.MutationStrategy;
 import xyz.phanta.tconmodmod.util.TconReflect;
 
-import java.lang.reflect.Field;
-
 @MutationStrategy.Register
 public class MutationMaxLevel implements MutationStrategy<Modifier> {
 
@@ -25,14 +23,6 @@ public class MutationMaxLevel implements MutationStrategy<Modifier> {
     @Override
     public void mutate(Modifier modifier, JsonElement data) {
         int maxLevel = data.getAsInt();
-        try {
-            Field fMax = modifier.getClass().getDeclaredField("max");
-            TconReflect.unfinal(fMax);
-            fMax.setAccessible(true);
-            fMax.setInt(modifier, maxLevel);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to write " + modifier.getClass() + ".max!");
-        }
         if (modifier instanceof ModifierTrait) {
             TconReflect.setMaxLevel((ModifierTrait)modifier, maxLevel);
         }
