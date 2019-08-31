@@ -10,6 +10,7 @@ import slimeknights.tconstruct.library.modifiers.IModifier;
 import slimeknights.tconstruct.tools.modifiers.ModExtraTrait;
 import xyz.phanta.tconmodmod.model.ModifierEntry;
 import xyz.phanta.tconmodmod.model.MutationEntry;
+import xyz.phanta.tconmodmod.modifier.ModReinforcedTMM;
 import xyz.phanta.tconmodmod.mutator.ModifierMutator;
 import xyz.phanta.tconmodmod.util.TconReflect;
 
@@ -59,6 +60,12 @@ public class CommonProxy {
                     .distinct()
                     .forEach(m -> TconModMod.LOGGER.info("- {} = {} ({})",
                             m.getIdentifier(), m.getLocalizedName(), m.getClass().getCanonicalName()));
+        }
+        if (TMMConfig.reinforcedConfig.replaceReinforced) {
+            TconModMod.LOGGER.info("Applying \"reinforced\" replacement...");
+            TconReflect.getModifierRegistry().remove("reinforced");
+            TconReflect.getTraitRegistry().remove("reinforced");
+            new ModReinforcedTMM(); // tcon registers modifiers/traits in the superconstructor
         }
         if (config != null) {
             TconModMod.LOGGER.info("Applying modifications...");

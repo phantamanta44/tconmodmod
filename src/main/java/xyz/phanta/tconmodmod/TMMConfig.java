@@ -16,4 +16,22 @@ public class TMMConfig {
     })
     public static boolean globalUnlimitedEmboss = false;
 
+    public static final Reinforced reinforcedConfig = new Reinforced();
+
+    public static class Reinforced {
+
+        @Config.Comment({
+                "Enabling this causes TMM to replace the default \"reinforced\" modifier with its own version.",
+                "This allows TMM to modify certain properties that would otherwise be unmodifiable."
+        })
+        public boolean replaceReinforced = true;
+
+        @Config.Comment({
+                "The chance to not damage the tool per level of \"reinforced\".",
+                "Requires replaceReinforced to be enabled!"
+        })
+        public double chancePerLevel = 0.2D;
+
+    }
+
 }

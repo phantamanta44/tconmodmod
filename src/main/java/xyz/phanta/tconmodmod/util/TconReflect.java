@@ -2,15 +2,19 @@ package xyz.phanta.tconmodmod.util;
 
 import slimeknights.mantle.util.RecipeMatch;
 import slimeknights.mantle.util.RecipeMatchRegistry;
+import slimeknights.tconstruct.library.TinkerRegistry;
+import slimeknights.tconstruct.library.modifiers.IModifier;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierAspect;
 import slimeknights.tconstruct.library.modifiers.ModifierTrait;
 import slimeknights.tconstruct.library.traits.AbstractTrait;
+import slimeknights.tconstruct.library.traits.ITrait;
 import slimeknights.tconstruct.tools.modifiers.ModExtraTrait;
 import slimeknights.tconstruct.tools.modifiers.ToolModifier;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 @SuppressWarnings("unchecked")
@@ -34,6 +38,9 @@ public class TconReflect {
     private static final Field fModifierTrait_maxLevel;
 
     private static final Class cModExtraTrait_ExtraTraitAspect;
+
+    private static final Field fTinkerRegistry_modifiers;
+    private static final Field fTinkerRegistry_traits;
 
     static {
         try {
@@ -70,6 +77,11 @@ public class TconReflect {
             fModifierTrait_maxLevel.setAccessible(true);
 
             cModExtraTrait_ExtraTraitAspect = Class.forName(ModExtraTrait.class.getCanonicalName() + "$ExtraTraitAspect");
+
+            fTinkerRegistry_modifiers = TinkerRegistry.class.getDeclaredField("modifiers");
+            fTinkerRegistry_modifiers.setAccessible(true);
+            fTinkerRegistry_traits = TinkerRegistry.class.getDeclaredField("traits");
+            fTinkerRegistry_traits.setAccessible(true);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize tcon reflection!", e);
         }
@@ -134,7 +146,7 @@ public class TconReflect {
             try {
                 fToolModifier_color.setInt(mod, colour);
             } catch (Exception e) {
-                throw new IllegalStateException("Failed to set ToolModifier.color!", e);
+                throw new IllegalStateException("Failed to write ToolModifier.color!", e);
             }
         }
     }
@@ -165,6 +177,22 @@ public class TconReflect {
 
     public static boolean instanceOfExtraTraitAspect(Object o) {
         return cModExtraTrait_ExtraTraitAspect.isInstance(o);
+    }
+
+    public static Map<String, IModifier> getModifierRegistry() {
+        try {
+            return (Map<String, IModifier>)fTinkerRegistry_modifiers.get(null);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to read TinkerRegistry.modifiers!", e);
+        }
+    }
+
+    public static Map<String, ITrait> getTraitRegistry() {
+        try {
+            return (Map<String, ITrait>)fTinkerRegistry_traits.get(null);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to read TinkerRegistry.traits!", e);
+        }
     }
 
 }
