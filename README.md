@@ -79,14 +79,11 @@ object ItemIngredient : Ingredient {
 
 In addition to the mutation configuration as specified above, the main `tconmodmod.cfg` configuration file contains some useful options:
 
-* Print all modifier IDs on game startup
-* Global unlimited embossments
+* Print all modifier IDs on game startup -- useful for discovering modifiers with unknown IDs.
+* Global unlimited embossments -- allows all embossments to be stacked with no restrictions.
+* Replace "reinforced" with a modified version -- the default Tinkers' version is hardcoded at a 20% chance per level; replacing it allows you to change this.
 
-It is recommended that modpack authors take a look at it before writing a mutation configuration.
-
-## Notes
-
-* The reinforced modifier's chance per level is coded in a way such that it is very difficult to change. Regardless of what you mutate its max level to be, each level will always add a 20% chance.
+It is recommended that modpack authors take a look at these options before writing a mutation configuration.
 
 ## Example Configuration
 
