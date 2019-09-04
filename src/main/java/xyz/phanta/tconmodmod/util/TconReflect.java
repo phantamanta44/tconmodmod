@@ -37,7 +37,7 @@ public class TconReflect {
     private static final Field fLevelAspect_maxLevel;
     private static final Field fModifierTrait_maxLevel;
 
-    private static final Class cModExtraTrait_ExtraTraitAspect;
+    private static final Class<?> cModExtraTrait_ExtraTraitAspect;
 
     private static final Field fTinkerRegistry_modifiers;
     private static final Field fTinkerRegistry_traits;
