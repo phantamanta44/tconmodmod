@@ -1,7 +1,5 @@
 package xyz.phanta.tconmodmod;
 
-import c4.conarm.common.armor.modifiers.ModExtraArmorTrait;
-import c4.conarm.lib.ArmoryRegistry;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.common.Loader;
@@ -11,12 +9,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.modifiers.IModifier;
 import slimeknights.tconstruct.tools.modifiers.ModExtraTrait;
+import xyz.phanta.tconmodmod.conarm.ConArmHandler;
+import xyz.phanta.tconmodmod.conarm.ConArmHandlerImpl;
 import xyz.phanta.tconmodmod.model.ModifierEntry;
 import xyz.phanta.tconmodmod.model.MutationEntry;
-import xyz.phanta.tconmodmod.modifier.ModReinforcedConArmTMM;
 import xyz.phanta.tconmodmod.modifier.ModReinforcedTMM;
 import xyz.phanta.tconmodmod.mutator.ModifierMutator;
-import xyz.phanta.tconmodmod.util.ConArmReflect;
 import xyz.phanta.tconmodmod.util.TconReflect;
 
 import javax.annotation.Nullable;
@@ -42,12 +40,12 @@ public class CommonProxy {
     private List<ModifierEntry> configConArm;
 
     @Nullable
-    private Boolean conArmLoaded = null;
+    private ConArmHandler conArmHandler = null;
 
     public void onPreInit(FMLPreInitializationEvent event) {
         Path configDir = event.getModConfigurationDirectory().toPath();
         configTcon = loadConfig(configDir, "tconmodmod.json", "base Tinkers' Construct");
-        if (isConArmLoaded()) {
+        if (getConArm().isConArmLoaded()) {
             configConArm = loadConfig(configDir, "tconmodmod_conarm.json", "Construct's Armoury");
         }
         ModifierMutator.init(event.getAsmData());
@@ -81,14 +79,7 @@ public class CommonProxy {
                     .distinct()
                     .forEach(m -> TconModMod.LOGGER.info("- {} = {} ({})",
                             m.getIdentifier(), m.getLocalizedName(), m.getClass().getCanonicalName()));
-            if (isConArmLoaded()) {
-                TconModMod.LOGGER.info("Construct's Armoury modifiers:");
-                ArmoryRegistry.getAllArmorModifiers().stream()
-                        .sorted(Comparator.comparing(IModifier::getIdentifier))
-                        .distinct()
-                        .forEach(m -> TconModMod.LOGGER.info("- {} = {} ({})",
-                                m.getIdentifier(), m.getLocalizedName(), m.getClass().getCanonicalName()));
-            }
+            getConArm().logModifiers();
         }
         if (TMMConfig.reinforcedConfig.replaceReinforced) {
             TconModMod.LOGGER.info("Applying \"reinforced\" replacement...");
@@ -96,18 +87,12 @@ public class CommonProxy {
             TconReflect.getTraitRegistry().remove("reinforced");
             new ModReinforcedTMM(); // tcon registers modifiers/traits in the superconstructor
         }
-        if (isConArmLoaded() && TMMConfig.reinforcedConArmConfig.replaceReinforced) {
-            TconModMod.LOGGER.info("Applying \"reinforced_armor\" replacement...");
-            TconReflect.getModifierRegistry().remove("reinforced_armor");
-            ConArmReflect.getModifierRegistry().remove("reinforced_armor");
-            TconReflect.getTraitRegistry().remove("reinforced_armor");
-            new ModReinforcedConArmTMM();
-        }
+        getConArm().doPreMutation();
         if (configTcon != null) {
             applyMutation("base Tinkers' Construct", false, configTcon, TinkerRegistry::getModifier);
         }
         if (configConArm != null) {
-            applyMutation("Construct's Armoury", true, configConArm, ArmoryRegistry::getArmorModifier);
+            applyMutation("Construct's Armoury", true, configConArm, getConArm().getModifierRegistry());
         }
         if (TMMConfig.globalUnlimitedEmboss) {
             TconModMod.LOGGER.info("Applying global unlimited emboss...");
@@ -117,14 +102,7 @@ public class CommonProxy {
                 }
             }
         }
-        if (isConArmLoaded() && TMMConfig.globalUnlimitedEmbossConArm) {
-            TconModMod.LOGGER.info("Applying Construct's Armoury global unlimited emboss...");
-            for (IModifier mod : ArmoryRegistry.getAllArmorModifiers()) {
-                if (mod instanceof ModExtraArmorTrait) {
-                    TconReflect.getAspects((ModExtraArmorTrait)mod).removeIf(ConArmReflect::instanceOfExtraTraitAspect);
-                }
-            }
-        }
+        getConArm().doPostMutation();
     }
 
     private static void applyMutation(String name, boolean conArm,
@@ -156,11 +134,15 @@ public class CommonProxy {
         }
     }
 
-    public boolean isConArmLoaded() {
-        if (conArmLoaded == null) {
-            conArmLoaded = Loader.isModLoaded("conarm");
+    public ConArmHandler getConArm() {
+        if (conArmHandler == null) {
+            if (Loader.isModLoaded("conarm")) {
+                conArmHandler = new ConArmHandlerImpl();
+            } else {
+                conArmHandler = new ConArmHandler.Noop();
+            }
         }
-        return conArmLoaded;
+        return conArmHandler;
     }
 
 }

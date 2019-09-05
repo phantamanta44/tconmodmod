@@ -23,7 +23,7 @@ public class ConArmReflect {
 
     static {
         try {
-            if (TconModMod.PROXY.isConArmLoaded()) {
+            if (TconModMod.PROXY.getConArm().isConArmLoaded()) {
                 cModExtraArmorTrait_ExtraTraitAspect = Class.forName(ModExtraArmorTrait.class.getCanonicalName() + "$ExtraTraitAspect");
                 fArmoryRegistry_armorModifiers = ArmoryRegistry.class.getDeclaredField("armorModifiers");
                 fArmoryRegistry_armorModifiers.setAccessible(true);
