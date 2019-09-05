@@ -149,3 +149,9 @@ This configuration does the following:
 ]
 
 ```
+
+## Construct's Armoury Integration
+
+Construct's Armoury modifiers and traits can be modified in exactly the same way as normal Tinkers' modifiers. Create a mutation config called `tconmodmod_conarm.json` in your config directory and you're good to go.
+
+A couple other interesting options are also available in the TMM configuration file for Construct's Armoury users. You're encouraged to take a look at those too.
