@@ -1,5 +1,6 @@
 package xyz.phanta.tconmodmod.mutator.impl;
 
+import c4.conarm.lib.utils.RecipeMatchHolder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,6 +13,7 @@ import xyz.phanta.tconmodmod.mutator.MutationStrategy;
 import xyz.phanta.tconmodmod.util.TconReflect;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.PriorityQueue;
 
 @MutationStrategy.Register
@@ -36,6 +38,18 @@ public class MutationMaterial implements MutationStrategy<Modifier> {
             RecipeMatch matcher = parseMatcher(elem.getAsJsonObject());
             if (matcher != null) {
                 matchers.add(matcher);
+            }
+        }
+    }
+
+    @Override
+    public void mutateConArm(Modifier modifier, JsonElement data) {
+        JsonArray matDto = data.getAsJsonArray();
+        RecipeMatchHolder.getRecipes(modifier).ifPresent(Collection::clear);
+        for (JsonElement elem : matDto) {
+            RecipeMatch matcher = parseMatcher(elem.getAsJsonObject());
+            if (matcher != null) {
+                RecipeMatchHolder.addRecipeMatch(modifier, matcher);
             }
         }
     }

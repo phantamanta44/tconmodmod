@@ -1,10 +1,12 @@
 package xyz.phanta.tconmodmod.mutator.impl;
 
+import c4.conarm.lib.modifiers.ArmorModifierTrait;
 import com.google.gson.JsonElement;
 import slimeknights.tconstruct.library.modifiers.Modifier;
 import slimeknights.tconstruct.library.modifiers.ModifierAspect;
 import slimeknights.tconstruct.library.modifiers.ModifierTrait;
 import xyz.phanta.tconmodmod.mutator.MutationStrategy;
+import xyz.phanta.tconmodmod.util.ConArmReflect;
 import xyz.phanta.tconmodmod.util.TconReflect;
 
 @MutationStrategy.Register
@@ -32,6 +34,14 @@ public class MutationMaxLevel implements MutationStrategy<Modifier> {
             } else if (aspect instanceof ModifierAspect.MultiAspect) {
                 TconReflect.setMaxLevel(TconReflect.extractLevelAspect((ModifierAspect.MultiAspect)aspect), maxLevel);
             }
+        }
+    }
+
+    @Override
+    public void mutateConArm(Modifier modifier, JsonElement data) {
+        mutate(modifier, data);
+        if (modifier instanceof ArmorModifierTrait) {
+            ConArmReflect.setMaxLevel((ArmorModifierTrait)modifier, data.getAsInt());
         }
     }
 

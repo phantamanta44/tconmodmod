@@ -11,7 +11,7 @@
   "logoFile": "",
   "screenshots": [],
   "useDependencyInformation": true,
-  "dependencies": ["tconstruct"],
+  "dependencies": ["tconstruct", "conarm"],
   "requiredMods": ["tconstruct"]
 }
 ]

@@ -98,15 +98,16 @@ public class CommonProxy {
         }
         if (isConArmLoaded() && TMMConfig.reinforcedConArmConfig.replaceReinforced) {
             TconModMod.LOGGER.info("Applying \"reinforced_armor\" replacement...");
+            TconReflect.getModifierRegistry().remove("reinforced_armor");
             ConArmReflect.getModifierRegistry().remove("reinforced_armor");
             TconReflect.getTraitRegistry().remove("reinforced_armor");
             new ModReinforcedConArmTMM();
         }
         if (configTcon != null) {
-            applyMutation("base Tinkers' Construct", configTcon, TinkerRegistry::getModifier);
+            applyMutation("base Tinkers' Construct", false, configTcon, TinkerRegistry::getModifier);
         }
         if (configConArm != null) {
-            applyMutation("Construct's Armoury", configConArm, ArmoryRegistry::getArmorModifier);
+            applyMutation("Construct's Armoury", true, configConArm, ArmoryRegistry::getArmorModifier);
         }
         if (TMMConfig.globalUnlimitedEmboss) {
             TconModMod.LOGGER.info("Applying global unlimited emboss...");
@@ -126,7 +127,8 @@ public class CommonProxy {
         }
     }
 
-    private static void applyMutation(String name, List<ModifierEntry> mutations, Function<String, ? extends IModifier> registry) {
+    private static void applyMutation(String name, boolean conArm,
+                                      List<ModifierEntry> mutations, Function<String, ? extends IModifier> registry) {
         TconModMod.LOGGER.info("Applying modifications for {}...", name);
         Map<String, ModifierMutator<?>> targetCache = new HashMap<>();
         for (ModifierEntry modEntry : mutations) {
@@ -145,7 +147,7 @@ public class CommonProxy {
                 for (MutationEntry mutEntry : modEntry.getMutations()) {
                     TconModMod.LOGGER.info("Applying mutation: {} -> {}", mutEntry.getType(), target);
                     try {
-                        mutator.tryMutate(mutEntry);
+                        mutator.tryMutate(mutEntry, conArm);
                     } catch (Exception e) {
                         TconModMod.LOGGER.warn("Mutation failed! Moving on...", e);
                     }

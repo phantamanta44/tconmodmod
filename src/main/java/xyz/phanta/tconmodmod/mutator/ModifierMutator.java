@@ -30,13 +30,18 @@ public class ModifierMutator<M extends IModifier> {
         this.mod = mod;
     }
 
-    public void tryMutate(MutationEntry mutation) {
+    public void tryMutate(MutationEntry mutation, boolean conArm) {
         MutationStrategy<?> strategy = mutationTypes.get(mutation.getType());
         if (strategy != null) {
             if (strategy.getTargetClass().isAssignableFrom(mod.getClass())) {
                 try {
-                    //noinspection unchecked
-                    ((MutationStrategy<M>)strategy).mutate(mod, mutation.getValue());
+                    if (conArm) {
+                        //noinspection unchecked
+                        ((MutationStrategy<M>)strategy).mutateConArm(mod, mutation.getValue());
+                    } else {
+                        //noinspection unchecked
+                        ((MutationStrategy<M>)strategy).mutate(mod, mutation.getValue());
+                    }
                 } catch (Exception e) {
                     Message message = TconModMod.LOGGER.getMessageFactory()
                             .newMessage("Mutation {} failed for modifier {}", mutation.getType(), mod.getIdentifier());

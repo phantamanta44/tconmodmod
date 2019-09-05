@@ -16,6 +16,10 @@ public interface MutationStrategy<M extends IModifier> {
 
     void mutate(M modifier, JsonElement data);
 
+    default void mutateConArm(M modifier, JsonElement data) {
+        mutate(modifier, data);
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     @interface Register {
