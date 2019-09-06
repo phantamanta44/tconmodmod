@@ -27,6 +27,7 @@ public class TconReflect {
 
     private static final Field fMultiAspect_dataAspect;
     private static final Field fMultiAspect_levelAspect;
+    private static final Field fMultiAspect_freeModifierAspect;
 
     private static final Field fDataAspect_color;
     private static final Field fAbstractTrait_color;
@@ -56,6 +57,8 @@ public class TconReflect {
             fMultiAspect_dataAspect.setAccessible(true);
             fMultiAspect_levelAspect = ModifierAspect.MultiAspect.class.getDeclaredField("levelAspect");
             fMultiAspect_levelAspect.setAccessible(true);
+            fMultiAspect_freeModifierAspect = ModifierAspect.MultiAspect.class.getDeclaredField("freeModifierAspect");
+            fMultiAspect_freeModifierAspect.setAccessible(true);
 
             fDataAspect_color = ModifierAspect.DataAspect.class.getDeclaredField("color");
             unfinal(fDataAspect_color);
@@ -124,6 +127,15 @@ public class TconReflect {
             return (ModifierAspect.LevelAspect)fMultiAspect_levelAspect.get(aspect);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to read MultiAspect.levelAspect!", e);
+        }
+    }
+
+    public static void injectFreeModifierAspect(ModifierAspect.MultiAspect multiAspect,
+                                                ModifierAspect.FreeModifierAspect freeModAspect) {
+        try {
+            fMultiAspect_freeModifierAspect.set(multiAspect, freeModAspect);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to write MultiAspect.freeModifierAspect!", e);
         }
     }
 

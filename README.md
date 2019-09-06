@@ -51,6 +51,15 @@ object MaxLevelMutationEntry : MutationEntry {
 object UnlimitedEmbossMutationEntry : MutationEntry {
     String type = "unlimited_emboss"
 }
+
+// Mutates the way a modifier consumes modifier slots
+object ModSlotsMutationEntry : MutationEntry {
+    String type = "mod_slots"
+    String value = "none" | "first" | "all" // the way the modifier consumes slots
+    // "none" -> the modifier consumes no slots
+    // "first" -> the modifier consumes only one slot when first applied
+    // "all" -> every individual level of the modifier consumes one slot
+}
 ```
 
 Some mutations (e.g. `material`) require item stack matchers for matching ingredients. Those are specified as follows:
